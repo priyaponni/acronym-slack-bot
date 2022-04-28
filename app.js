@@ -32,6 +32,12 @@ app.action('feedback_option', async(obj) => {
     await obj.say(`${obj.body.user.username} clicked the option - ${obj.payload.selected_option.text.text}`)
 });
 
+app.action('actionId-0', async(obj) => {
+  console.log(obj);
+  await obj.say(`Thank you, your response is valuable`);
+});
+
+
 
 (async () => {
   // Start your app
