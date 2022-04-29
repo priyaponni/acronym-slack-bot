@@ -1,8 +1,10 @@
 const { App } = require('@slack/bolt');
 require('dotenv').config();
-const acronyms = require('./reducedAcronyms.json');
+const acronyms = require('./acronyms.json');
 const { getFeedback } = require('./messageBuilder');
 var emoji = require('node-emoji');
+
+const userMap = {};
 
 // Initializes your app with your bot token and signing secret
 const app = new App({
@@ -19,7 +21,7 @@ app.message('hello', async ({ message, say }) => {
 
 // Listens to incoming messages that contain "?"
 app.message('?', async ({ message, say }) => {
-  const regex = /^\?[A-Z]+/;
+  const regex = /^\?[A-Z0-9]+/;
   if(!regex.test(message.text)) {
     return;
   }
@@ -32,7 +34,10 @@ app.message('?', async ({ message, say }) => {
   if(!obj) {
     await say(`Sorry, we couldnt find ${requestedAcronym} ${emoji.get(notFoundEmoji[Math.floor(Math.random() * notFoundEmoji.length)])}`);
   } else {
-    await say(getFeedback(`${requestedAcronym} refers to \`${obj.full}\`! ${emoji.get(foundEmoji[Math.floor(Math.random() * foundEmoji.length)])}`));
+    let isFirstTimeUser = !(userMap[message.user]);
+    userMap[message.user] = true;
+    const msg = `${requestedAcronym} refers to \`${obj.full}\`! ${emoji.get(foundEmoji[Math.floor(Math.random() * foundEmoji.length)])}`;
+    await say(getFeedback(msg, isFirstTimeUser));
   }
 });
 
