@@ -5,7 +5,6 @@ A slack bot listener for a 'Socket mode' slack bot, when added to your workspace
 ## Usage 
 Add Bot to the channel and have fun
 Its currently added to the `test-ged-what` slack channel in sandbox slack - https://intuit-sandbox-tests.enterprise.slack.com/
-
 ![What bot](/whatbot.png "What Bot")
 
 
