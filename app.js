@@ -2,6 +2,7 @@ const { App } = require('@slack/bolt');
 require('dotenv').config();
 const acronyms = require('./reducedAcronyms.json');
 const { getFeedback } = require('./messageBuilder');
+var emoji = require('node-emoji');
 
 // Initializes your app with your bot token and signing secret
 const app = new App({
@@ -13,27 +14,33 @@ const app = new App({
 
 // Listens to incoming messages that contain "hello"
 app.message('hello', async ({ message, say }) => {
-    // say() sends a message to the channel where the event was triggered
     await say(`Hey there <@${message.user}>!`);
 });
 
-// Listens to incoming messages that contain "hello"
-app.message('what', async ({ message, say }) => {
-    const requestedAcronym = message.text.split('what is ')[1] || 'LMK';
-    const obj = acronyms.find((obj) => obj.acronym === requestedAcronym)
-    // say() sends a message to the channel where the event was triggered
-    // await say(`Hey there <@${message.user}>, The acronym ${requestedAcronym} expands to ${obj.full}!`);
-    await say(getFeedback(message.user, requestedAcronym, obj.full));
+// Listens to incoming messages that contain "?"
+app.message('?', async ({ message, say }) => {
+  const regex = /^\?[A-Z]+/;
+  if(!regex.test(message.text)) {
+    return;
+  }
+
+  const requestedAcronym = message.text.substring(1);  
+  const obj = acronyms.find((obj) => obj.acronym === requestedAcronym);
+  const foundEmoji = ['coffee','umbrella_with_rain_drops', 'white_check_mark', 'trophy', 'golfer'];
+  const notFoundEmoji = ['cry', 'persevere', 'worried', 'sweat', 'unamused'];
+  
+  if(!obj) {
+    await say(`Sorry, we couldnt find ${requestedAcronym} ${emoji.get(notFoundEmoji[Math.floor(Math.random() * notFoundEmoji.length)])}`);
+  } else {
+    await say(getFeedback(`${requestedAcronym} refers to \`${obj.full}\`! ${emoji.get(foundEmoji[Math.floor(Math.random() * foundEmoji.length)])}`));
+  }
 });
 
 app.action('feedback_option', async(obj) => {
-    console.log(obj);
-    console.log(obj.payload.selected_option.text);
-    await obj.say(`${obj.body.user.username} clicked the option - ${obj.payload.selected_option.text.text}`)
+    await obj.say(`Thank you, your response is valuable`)
 });
 
 app.action('actionId-0', async(obj) => {
-  console.log(obj);
   await obj.say(`Thank you, your response is valuable`);
 });
 
@@ -42,6 +49,7 @@ app.action('actionId-0', async(obj) => {
 (async () => {
   // Start your app
   await app.start(process.env.PORT || 3000);
+  console.log(emoji.get('coffee'));
 
   console.log('⚡️ Bolt app is running!');
 })();
