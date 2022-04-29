@@ -1,11 +1,11 @@
-const getFeedback = (user, requestedAcronym, acronymValue) => {
+const getFeedback = (text) => {
     return {
         "blocks": [
             {
                 "type": "section",
                 "text": {
                     "type": "mrkdwn",
-                    text: `Hey there <@${user}>, The acronym ${requestedAcronym} expands to ${acronymValue}!`
+                    text
                 }
             },
             {
@@ -44,21 +44,6 @@ const getFeedback = (user, requestedAcronym, acronymValue) => {
                     ],
                     "action_id": "feedback_option"
                 }
-            },
-            {
-                "type": "actions",
-                "elements": [
-                    {
-                        "type": "button",
-                        "text": {
-                            "type": "plain_text",
-                            "text": "Click me if it was useful",
-                            "emoji": true
-                        },
-                        "value": "click_me_123",
-                        "action_id": "actionId-0"
-                    }
-                ]
             }
         ]
     }
